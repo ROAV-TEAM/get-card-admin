@@ -13,10 +13,11 @@
 </head>
 <body>
 
-    <!-- Background Video — fullscreen, always playing -->
-    <video id="bgVideo" class="bg-video" autoplay muted loop playsinline>
-        <source src="bg.mp4" type="video/mp4">
-    </video>
+    <!-- Background Image — fullscreen, mobile-optimized -->
+    <div class="bg-image-wrap" aria-hidden="true">
+        <img src="bg.png" class="bg-image" alt="" fetchpriority="high">
+        <div class="bg-image-overlay"></div>
+    </div>
 
     <!-- Success Video Overlay -->
     <div id="successOverlay" class="success-overlay hidden">

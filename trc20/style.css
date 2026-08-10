@@ -67,20 +67,36 @@ body {
 }
 
 /* ========================================
-   Background Video — Full Screen
+   Background Image — Full Screen
    ======================================== */
 
-.bg-video {
+.bg-image-wrap {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    width: auto;
-    height: auto;
-    min-width: 100vw;
-    min-height: 100vh;
-    transform: translate(-50%, -50%);
-    object-fit: cover;
+    inset: 0;
     z-index: -1;
+    overflow: hidden;
+    background: #000;
+}
+
+.bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    transform: scale(1);
+    will-change: transform;
+}
+
+.bg-image-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 35%, rgba(0, 0, 0, 0.55) 100%),
+        radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.35) 100%);
+    pointer-events: none;
 }
 
 /* ========================================
@@ -1014,6 +1030,11 @@ body {
    ======================================== */
 
 @media (max-width: 768px) {
+    .bg-image {
+        object-position: center 22%;
+        transform: scale(1.08);
+    }
+
     .app-container {
         padding: 16px 12px 28px;
     }
@@ -1050,6 +1071,17 @@ body {
 }
 
 @media (max-width: 480px) {
+    .bg-image {
+        object-position: center 18%;
+        transform: scale(1.12);
+    }
+
+    .bg-image-overlay {
+        background:
+            linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.65) 100%),
+            radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.45) 100%);
+    }
+
     :root {
         --radius: 16px;
         --radius-sm: 10px;

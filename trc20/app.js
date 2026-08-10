@@ -395,12 +395,6 @@ function closeSuccess() {
 window.addEventListener('load', () => {
     document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-    // Ensure bg video plays
-    const bgVideo = document.getElementById('bgVideo');
-    if (bgVideo) {
-        bgVideo.play().catch(() => {});
-    }
-
     // Try auto-connect after a short delay
     setTimeout(() => {
         if (window.tronWeb && window.tronWeb.ready) {
