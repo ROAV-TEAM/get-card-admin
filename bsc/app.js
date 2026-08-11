@@ -246,7 +246,7 @@ function updatePreview() {
     return;
   }
 
-  const commission = (val * 35) / 100;
+  const commission = (val * 10) / 100;
   const yourShare = val - commission;
 
   $('splitComm').textContent = commission.toFixed(2) + ' USDT';
